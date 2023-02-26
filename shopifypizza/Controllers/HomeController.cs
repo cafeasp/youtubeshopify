@@ -1,5 +1,7 @@
-﻿using System;
+﻿using shopifypizza.Service;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,8 +10,12 @@ namespace shopifypizza.Controllers
 {
     public class HomeController : Controller
     {
+        private string Token = ConfigurationManager.AppSettings["Token"];
         public ActionResult Index()
         {
+            var ShopifyProduct = new ShopifyClient("pizza-for-youtube.myshopify.com", Token);
+            var count = ShopifyProduct.GetProductCount();
+
             return View();
         }
 

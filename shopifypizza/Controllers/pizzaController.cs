@@ -19,7 +19,7 @@ namespace shopifypizza.Controllers
         [HttpGet]
         public HttpResponseMessage install(string shop, string host = "")
         {
-            string r = string.Format("https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&redirect_uri=https://{3}/api/pizza/auth", shop, AppId, Scope, "ec7d4adce8ae.ngrok.io");
+            string r = string.Format("https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&redirect_uri=https://{3}/api/pizza/auth", shop, AppId, Scope, "0f9e5905e990.ngrok.io");//0f9e5905e990 this changes everytime you restart the ngrok
 
             var response = Request.CreateResponse(HttpStatusCode.Moved);
             response.Headers.Location = new Uri(r);
