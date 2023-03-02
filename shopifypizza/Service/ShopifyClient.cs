@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Sockets;
 using System.Web;
 using Newtonsoft.Json;
 using RestSharp;
+using shopifypizza.Models;
+
 namespace shopifypizza.Service
 {
     public class ShopifyClient
@@ -19,15 +22,16 @@ namespace shopifypizza.Service
             Shop = shop;
             Token = token;
         }
-        public int GetProductCount() {
+        public int GetProductCount()
+        {
 
             try
             {
                 string productCount = string.Format("https://{0}/", Shop);
 
-                var client = new RestClient(productCount);
+                client = new RestClient(productCount);
 
-                var request = new RestRequest("admin/api/2023-01/products/count.json", Method.Get);
+                request = new RestRequest("admin/api/2023-01/products/count.json", Method.Get);
                 request.RequestFormat = DataFormat.Json;
                 request.AddHeader("X-Shopify-Access-Token", Token);
 
@@ -37,7 +41,7 @@ namespace shopifypizza.Service
                 var count = r.count;
                 return (int)count;
 
-              
+
             }
             catch (Exception e)
             {
@@ -45,9 +49,40 @@ namespace shopifypizza.Service
                 return 0;
             }
 
-           
-        
-        
+
+
+
+        }
+        public ProductListModel GetProducts() {
+
+            try
+            {
+                string productUrl = string.Format("https://{0}/", Shop);
+
+                client = new RestClient(productUrl);
+
+                request = new RestRequest("admin/api/2023-01/products.json", Method.Get);
+                request.RequestFormat = DataFormat.Json;
+                request.AddHeader("X-Shopify-Access-Token", Token);
+
+                var response = client.Execute(request);
+                
+                var r = JsonConvert.DeserializeObject<dynamic>(response.Content);
+
+                var products = new ProductListModel();
+
+                foreach (var item in r.products)
+                {
+                    products.Products.Add(new ProductModel()
+                    { Description = item.body_html, Id=item.id, Title = item.title, Vendor = item.vendor });
+                }
+          
+                return products;           
+            }
+            catch (Exception e)
+            {
+                return new ProductListModel();
+            }      
         }
     }
 }
